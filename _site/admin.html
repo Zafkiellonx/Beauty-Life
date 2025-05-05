@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty Life - Админ панель</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6b81;
+            --secondary: #ff8e53;
+            --dark: #333;
+            --light: #fff;
+            --gray: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        header {
+            background-color: var(--light);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+            box-shadow: 0 4px 15px rgba(255,107,129,0.3);
+        }
+        
+        .brand-name {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--light);
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(255,107,129,0.2);
+        }
+        
+        .user-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .admin-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 100px auto 50px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .admin-title {
+            font-size: 28px;
+            color: var(--dark);
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .orders-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .orders-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .orders-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        .status-pending {
+            color: #ff9800;
+            font-weight: 600;
+        }
+        
+        .status-confirmed {
+            color: #4caf50;
+            font-weight: 600;
+        }
+        
+        .status-cancelled {
+            color: #f44336;
+            font-weight: 600;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-right: 5px;
+        }
+        
+        .confirm-btn {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background: #f44336;
+            color: white;
+        }
+        
+        /* Стили для секции управления организацией */
+        .admin-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-top: 40px;
+        }
+
+        .org-info-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .org-info-card p {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .org-edit-form {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .org-edit-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .org-edit-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .org-edit-form input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,107,129,0.3);
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-modal:hover {
+            color: var(--primary);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">BL</div>
+                <span class="brand-name">Beauty Life</span>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="#" id="logoutBtn" class="user-icon"><i class="fas fa-sign-out-alt"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">Панель администратора</h1>
+        </div>
+        
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-value" id="totalOrders">0</div>
+                <div class="stat-label">Всего заказов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="newOrders">0</div>
+                <div class="stat-label">Новых заказов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalClients">0</div>
+                <div class="stat-label">Всего клиентов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="revenue">0 ₽</div>
+                <div class="stat-label">Общий доход</div>
+            </div>
+        </div>
+        
+        <h2>Последние заказы</h2>
+        <div id="ordersList">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Клиент</th>
+                        <th>Услуга</th>
+                        <th>Дата</th>
+                        <th>Стоимость</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Секция управления организацией -->
+        <section class="admin-section">
+            <h2>Управление информацией об организации</h2>
+            
+            <div class="org-info-card">
+                <h3>Текущая информация</h3>
+                <div id="currentOrgInfo">
+                    <p><strong>Название:</strong> <span id="orgNameDisplay">Beauty Life</span></p>
+                    <p><strong>Адрес:</strong> <span id="orgAddressDisplay">г. Москва, ул. Красивая, 15</span></p>
+                    <p><strong>Телефон:</strong> <span id="orgPhoneDisplay">+7 (999) 123-45-67</span></p>
+                    <p><strong>Email:</strong> <span id="orgEmailDisplay">info@beautylife.ru</span></p>
+                    <p><strong>Часы работы:</strong> <span id="orgHoursDisplay">Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-20:00</span></p>
+                </div>
+            </div>
+
+            <div class="org-edit-form">
+                <h3>Редактировать информацию</h3>
+                <form id="orgInfoForm">
+                    <div class="form-group">
+                        <label for="orgName">Название организации</label>
+                        <input type="text" id="orgName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="orgAddress">Адрес</label>
+                        <input type="text" id="orgAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="orgPhone">Телефон</label>
+                        <input type="tel" id="orgPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="orgEmail">Email</label>
+                        <input type="email" id="orgEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="orgHours">Часы работы</label>
+                        <input type="text" id="orgHours" required>
+                    </div>
+                    <button type="submit" class="btn">Сохранить изменения</button>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Секция управления услугами -->
+        <section class="admin-section">
+            <h2>Управление услугами</h2>
+            
+            <div class="services-list">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Описание</th>
+                            <th>Цена</th>
+                            <th>Категория</th>
+                            <th>Длительность</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servicesTableBody"></tbody>
+                </table>
+                
+                <button class="btn" id="addServiceBtn" style="margin-top: 20px;">
+                    <i class="fas fa-plus"></i> Добавить услугу
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальное окно для добавления/редактирования услуги -->
+    <div id="serviceModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="modalTitle">Добавить новую услугу</h3>
+            <form id="serviceForm">
+                <input type="hidden" id="serviceId">
+                <div class="form-group">
+                    <label for="serviceName">Название услуги</label>
+                    <input type="text" id="serviceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription">Описание</label>
+                    <textarea id="serviceDescription" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="servicePrice">Цена (руб.)</label>
+                    <input type="number" id="servicePrice" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceCategory">Категория</label>
+                    <select id="serviceCategory" required>
+                        <option value="Парикмахерские">Парикмахерские</option>
+                        <option value="Маникюр">Маникюр</option>
+                        <option value="Педикюр">Педикюр</option>
+                        <option value="Косметология">Косметология</option>
+                        <option value="Массаж">Массаж</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="serviceDuration">Длительность (мин.)</label>
+                    <input type="number" id="serviceDuration" required>
+                </div>
+                <button type="submit" class="btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация хранилища
+        function initializeTestData() {
+            if (!localStorage.getItem('beautyLifeUsers')) {
+                const testData = [
+                    {
+                        id: "admin-1",
+                        firstName: "Admin",
+                        lastName: "Adminov",
+                        email: "admin@beautylife.ru",
+                        password: "admin123",
+                        appointments: [],
+                        regDate: new Date().toLocaleDateString('ru-RU')
+                    }
+                ];
+                localStorage.setItem('beautyLifeUsers', JSON.stringify(testData));
+            }
+            
+            if (!localStorage.getItem('beautyLifeOrgInfo')) {
+                const orgInfo = {
+                    name: 'Beauty Life',
+                    address: 'г. Москва, ул. Красивая, 15',
+                    phone: '+7 (999) 123-45-67',
+                    email: 'info@beautylife.ru',
+                    hours: 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-20:00'
+                };
+                localStorage.setItem('beautyLifeOrgInfo', JSON.stringify(orgInfo));
+            }
+            
+            if (!localStorage.getItem('beautyLifeServices')) {
+                const defaultServices = [
+                    {
+                        id: 'service-1',
+                        name: 'Женская стрижка',
+                        description: 'Стрижка с учетом особенностей вашего типа волос и формы лица',
+                        price: 1500,
+                        category: 'Парикмахерские',
+                        duration: 60
+                    },
+                    {
+                        id: 'service-2',
+                        name: 'Мужская стрижка',
+                        description: 'Классическая или современная стрижка с оформлением бороды',
+                        price: 800,
+                        category: 'Парикмахерские',
+                        duration: 40
+                    },
+                    {
+                        id: 'service-3',
+                        name: 'Классический маникюр',
+                        description: 'Обрезной маникюр с покрытием лаком',
+                        price: 1200,
+                        category: 'Маникюр',
+                        duration: 60
+                    }
+                ];
+                localStorage.setItem('beautyLifeServices', JSON.stringify(defaultServices));
+            }
+            
+            if (!localStorage.getItem('currentUser')) {
+                localStorage.setItem('currentUser', JSON.stringify({
+                    firstName: "Admin",
+                    lastName: "Adminov",
+                    email: "admin@beautylife.ru"
+                }));
+            }
+        }
+
+        // Загрузка информации об организации
+        function loadOrgInfo() {
+            const orgInfo = JSON.parse(localStorage.getItem('beautyLifeOrgInfo')) || {
+                name: 'Beauty Life',
+                address: 'г. Москва, ул. Красивая, 15',
+                phone: '+7 (999) 123-45-67',
+                email: 'info@beautylife.ru',
+                hours: 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-20:00'
+            };
+
+            // Отображаем текущую информацию
+            document.getElementById('orgNameDisplay').textContent = orgInfo.name;
+            document.getElementById('orgAddressDisplay').textContent = orgInfo.address;
+            document.getElementById('orgPhoneDisplay').textContent = orgInfo.phone;
+            document.getElementById('orgEmailDisplay').textContent = orgInfo.email;
+            document.getElementById('orgHoursDisplay').textContent = orgInfo.hours;
+
+            // Заполняем форму редактирования
+            document.getElementById('orgName').value = orgInfo.name;
+            document.getElementById('orgAddress').value = orgInfo.address;
+            document.getElementById('orgPhone').value = orgInfo.phone;
+            document.getElementById('orgEmail').value = orgInfo.email;
+            document.getElementById('orgHours').value = orgInfo.hours;
+
+            return orgInfo;
+        }
+
+        // Загрузка данных администратора
+        function loadAdminData() {
+            const users = JSON.parse(localStorage.getItem('beautyLifeUsers')) || [];
+            
+            let allOrders = [];
+            let totalRevenue = 0;
+            let newOrdersCount = 0;
+            
+            users.forEach(user => {
+                if (user.appointments && user.appointments.length > 0) {
+                    user.appointments.forEach((order, index) => {
+                        allOrders.push({
+                            ...order,
+                            userName: user.firstName + ' ' + user.lastName,
+                            userEmail: user.email,
+                            userId: user.id,
+                            orderIndex: index
+                        });
+                        
+                        if (order.status !== 'Отменено') {
+                            const price = parseInt(order.price.replace(/\D/g, '')) || 0;
+                            totalRevenue += price;
+                        }
+                        
+                        if (order.status === 'Новый') {
+                            newOrdersCount++;
+                        }
+                    });
+                }
+            });
+            
+            document.getElementById('totalOrders').textContent = allOrders.length;
+            document.getElementById('newOrders').textContent = newOrdersCount;
+            document.getElementById('totalClients').textContent = users.length;
+            document.getElementById('revenue').textContent = totalRevenue.toLocaleString() + ' ₽';
+            
+            allOrders.sort((a, b) => new Date(b.date.split(' ')[0].split('.').reverse().join('-')) - 
+                             new Date(a.date.split(' ')[0].split('.').reverse().join('-')));
+            
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = '';
+            
+            allOrders.forEach((order, index) => {
+                const [date, time] = order.date.split(' ');
+                const statusClass = `status-${order.status ? order.status.toLowerCase() : 'confirmed'}`;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <div>${order.userName}</div>
+                        <small>${order.userEmail}</small>
+                    </td>
+                    <td>${order.service}</td>
+                    <td>${date}<br><small>${time}</small></td>
+                    <td>${order.price}</td>
+                    <td><span class="${statusClass}">${order.status || 'Подтверждено'}</span></td>
+                    <td>
+                        ${(!order.status || order.status === 'Новый') ? `
+                            <button class="action-btn confirm-btn" 
+                                data-userid="${order.userId}" 
+                                data-orderindex="${order.orderIndex}">
+                                Подтвердить
+                            </button>
+                            <button class="action-btn cancel-btn" 
+                                data-userid="${order.userId}" 
+                                data-orderindex="${order.orderIndex}">
+                                Отменить
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            document.querySelectorAll('.confirm-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    updateOrderStatus(
+                        this.getAttribute('data-userid'),
+                        this.getAttribute('data-orderindex'),
+                        'Подтверждено'
+                    );
+                });
+            });
+            
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    updateOrderStatus(
+                        this.getAttribute('data-userid'),
+                        this.getAttribute('data-orderindex'),
+                        'Отменено'
+                    );
+                });
+            });
+        }
+        
+        function updateOrderStatus(userId, orderIndex, newStatus) {
+    try {
+        const users = JSON.parse(localStorage.getItem('beautyLifeUsers')) || [];
+        const userIndex = users.findIndex(u => u.id === userId);
+        
+        if (userIndex === -1) {
+            throw new Error(`Пользователь с ID ${userId} не найден`);
+        }
+        
+        if (!users[userIndex].appointments || !users[userIndex].appointments[orderIndex]) {
+            throw new Error("Запись не найдена");
+        }
+        
+        // Обновляем статус
+        users[userIndex].appointments[orderIndex].status = newStatus;
+        
+        // Сохраняем изменения
+        localStorage.setItem('beautyLifeUsers', JSON.stringify(users));
+        
+        // Обновляем текущего пользователя (если это его запись)
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser && currentUser.email === users[userIndex].email) {
+            currentUser.appointments = users[userIndex].appointments;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+        
+        // Обновляем таблицу
+        loadAdminData();
+        alert(`Статус успешно изменён на "${newStatus}"`);
+        
+    } catch (error) {
+        console.error("Ошибка обновления статуса:", error);
+        alert(error.message);
+    }
+}
+
+        // Загрузка списка услуг
+        function loadServices() {
+            const services = JSON.parse(localStorage.getItem('beautyLifeServices')) || [];
+            const tbody = document.getElementById('servicesTableBody');
+            tbody.innerHTML = '';
+            
+            services.forEach(service => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${service.name}</td>
+                    <td>${service.description}</td>
+                    <td>${service.price} руб.</td>
+                    <td>${service.category}</td>
+                    <td>${service.duration} мин.</td>
+                    <td>
+                        <button class="action-btn edit-service" data-id="${service.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn cancel-btn delete-service" data-id="${service.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Обработчики для кнопок редактирования
+            document.querySelectorAll('.edit-service').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    editService(this.getAttribute('data-id'));
+                });
+            });
+            
+            // Обработчики для кнопок удаления
+            document.querySelectorAll('.delete-service').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    deleteService(this.getAttribute('data-id'));
+                });
+            });
+        }
+
+        // Открытие модального окна для добавления услуги
+        document.getElementById('addServiceBtn').addEventListener('click', function() {
+            document.getElementById('modalTitle').textContent = 'Добавить новую услугу';
+            document.getElementById('serviceForm').reset();
+            document.getElementById('serviceId').value = '';
+            document.getElementById('serviceModal').style.display = 'block';
+        });
+
+        // Закрытие модального окна
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            document.getElementById('serviceModal').style.display = 'none';
+        });
+
+        // Редактирование услуги
+        function editService(serviceId) {
+            const services = JSON.parse(localStorage.getItem('beautyLifeServices')) || [];
+            const service = services.find(s => s.id === serviceId);
+            
+            if (service) {
+                document.getElementById('modalTitle').textContent = 'Редактировать услугу';
+                document.getElementById('serviceId').value = service.id;
+                document.getElementById('serviceName').value = service.name;
+                document.getElementById('serviceDescription').value = service.description;
+                document.getElementById('servicePrice').value = service.price;
+                document.getElementById('serviceCategory').value = service.category;
+                document.getElementById('serviceDuration').value = service.duration;
+                
+                document.getElementById('serviceModal').style.display = 'block';
+            }
+        }
+
+        // Удаление услуги
+        function deleteService(serviceId) {
+            if (confirm('Вы уверены, что хотите удалить эту услугу?')) {
+                const services = JSON.parse(localStorage.getItem('beautyLifeServices')) || [];
+                const updatedServices = services.filter(s => s.id !== serviceId);
+                
+                localStorage.setItem('beautyLifeServices', JSON.stringify(updatedServices));
+                loadServices();
+                alert('Услуга успешно удалена');
+            }
+        }
+
+        // Обработка формы услуги
+        document.getElementById('serviceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const serviceId = document.getElementById('serviceId').value;
+            const name = document.getElementById('serviceName').value;
+            const description = document.getElementById('serviceDescription').value;
+            const price = parseInt(document.getElementById('servicePrice').value);
+            const category = document.getElementById('serviceCategory').value;
+            const duration = parseInt(document.getElementById('serviceDuration').value);
+            
+            const services = JSON.parse(localStorage.getItem('beautyLifeServices')) || [];
+            
+            if (serviceId) {
+                // Редактирование существующей услуги
+                const index = services.findIndex(s => s.id === serviceId);
+                if (index !== -1) {
+                    services[index] = {
+                        id: serviceId,
+                        name,
+                        description,
+                        price,
+                        category,
+                        duration
+                    };
+                }
+            } else {
+                // Добавление новой услуги
+                const newService = {
+                    id: 'service-' + Date.now(),
+                    name,
+                    description,
+                    price,
+                    category,
+                    duration
+                };
+                services.push(newService);
+            }
+            
+            localStorage.setItem('beautyLifeServices', JSON.stringify(services));
+            document.getElementById('serviceModal').style.display = 'none';
+            loadServices();
+            alert('Услуга успешно сохранена');
+        });
+
+        // Закрытие модального окна при клике вне его
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('serviceModal')) {
+                document.getElementById('serviceModal').style.display = 'none';
+            }
+        });
+
+        // Обработчик формы редактирования организации
+        document.getElementById('orgInfoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newOrgInfo = {
+                name: document.getElementById('orgName').value,
+                address: document.getElementById('orgAddress').value,
+                phone: document.getElementById('orgPhone').value,
+                email: document.getElementById('orgEmail').value,
+                hours: document.getElementById('orgHours').value
+            };
+            
+            localStorage.setItem('beautyLifeOrgInfo', JSON.stringify(newOrgInfo));
+            loadOrgInfo();
+            alert('Информация об организации успешно обновлена!');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTestData();
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser || currentUser.email !== 'admin@beautylife.ru') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            });
+            
+            loadAdminData();
+            loadOrgInfo();
+            loadServices();
+        });
+    </script>
+</body>
+</html>
